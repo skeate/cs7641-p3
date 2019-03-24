@@ -77,3 +77,11 @@ class PCAExperiment(experiments.BaseExperiment):
         updated_ds = self._details.ds.reload_from_hdf(hdf_path=hdf_path, hdf_ds_name=self._details.ds_name,
                                                       preprocess=False)
         experiments.run_subexperiment(self, self._out.format('clustering/'), updated_ds)
+
+    def produce_2d_cluster(self):
+        self.log('Producing a 2d cluster for {}'.format(self.experiment_name()))
+        pca = PCA(n_components=2, random_state=self._details.seed)
+        pca.fit(self._details.ds.training_x)
+        tmp = pd.DataFrame(pca.transform(self._details.ds.training_x))
+        tmp['target'] = self._details.ds.training_y
+        tmp.to_csv(self._out.format('{}_2d_vis.csv'.format(self._details.ds_name)))

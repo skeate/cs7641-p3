@@ -72,6 +72,7 @@ adj_mi_file_name_regex = re.compile('(.*)_adj_mi\.csv')
 loglikelihood_file_name_regex = re.compile('(.*)_logliklihood\.csv')
 bic_file_name_regex = re.compile('(.*)_bic\.csv')
 tsne_file_name_regex = re.compile('(.*)_2D\.csv')
+pca2d_file_name_regex = re.compile('(.*)_2d_vis\.csv')
 sil_score_file_name_regex = re.compile('(.*)_sil_score\.csv')
 sil_samples_file_name_regex = re.compile('(.*)_sil_samples\.csv')
 
@@ -524,6 +525,17 @@ def read_and_plot_tsne(problem, file, output_dir):
         '{}/{}/{}_tsne.png'.format(output_dir, problem['name'], ds_name),
         format='png', bbox_inches='tight', dpi=150)
 
+def read_and_plot_pca2d(problem, file, output_dir):
+    ds_name, ds_readable_name = get_ds_name(file, pca2d_file_name_regex)
+    logger.info("Plotting PCA 2d for file {} to {} ({})".format(file, output_dir, ds_name))
+
+    title = '{} - {}'.format(ds_readable_name, problem['name'])
+    df = pd.read_csv(file)
+    p = plot_tsne(title, df)
+    p = watermark(p)
+    p.savefig(
+        '{}/{}/{}_pca2d.png'.format(output_dir, problem['name'], ds_name),
+        format='png', bbox_inches='tight', dpi=150)
 
 def read_and_plot_sse(problem, file, output_dir):
     ds_name, ds_readable_name = get_ds_name(file, sse_file_name_regex)
@@ -544,7 +556,7 @@ def read_and_plot_acc(problem, file, output_dir):
 
     title = '{} - {}: Accuracy vs Number of Clusters'.format(ds_readable_name, problem['name'])
     df = pd.read_csv(file).set_index('k')
-    p = plot_sse(title, df)
+    p = plot_acc(title, df)
     p = watermark(p)
     p.savefig(
         '{}/{}/{}_acc.png'.format(output_dir, problem['name'], ds_name),
